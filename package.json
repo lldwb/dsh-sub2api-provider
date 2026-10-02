@@ -1,0 +1,38 @@
+{
+  "name": "dsh-sub2api-provider",
+  "version": "1.0.0",
+  "description": "Sub2API as a third-party provider for DeepSeek Harness, with Off/Low/High/Max thinking effort.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "icon": "./icon.svg",
+  "exports": {
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "bundle",
+    "sub2api",
+    "anthropic-messages"
+  ],
+  "meta": {
+    "title": "Sub2API Provider",
+    "description": "Adds the Sub2API gateway as a third-party provider with Off/Low/High/Max thinking effort."
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
