@@ -1,0 +1,54 @@
+# Sub2API third-party provider for the pi-ai LLM adapter.
+#
+# An id-targeted patch replaces the whole `config` of the shipped `llm-pi-ai`
+# row, so this row restates every provider it wants served: a patch that named
+# only `sub2api` would silently drop the others.
+#
+# A higher-priority layer (the profile's own cordis.patch.yml, or a --patch
+# overlay) that also targets `llm-pi-ai` replaces this config wholesale.
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
+  config:
+    providers:
+      sub2api:
+        displayName: Sub2API
+        apiKeyEnv: SUB2API_API_KEY
+        api: anthropic-messages
+        # Change this to your own Sub2API (or Anthropic Messages compatible) endpoint.
+        baseURL: http://150.241.207.58:8080
+        # This gateway accepts Anthropic adaptive thinking
+        # (thinking.type=adaptive + output_config.effort) but does NOT enforce
+        # thinking.budget_tokens, so the effort ladder is what actually carries
+        # the thinking intensity. Measured on the reference gateway: a
+        # budget_tokens of 128 still produced ~2500 tokens of thinking.
+        compat:
+          forceAdaptiveThinking: true
+        models:
+          - id: deepseek-flash
+            name: deepseek-flash
+            contextWindow: 1000000
+            input:
+              - text
+              - image
+            # Levels the picker publishes; undeclared levels are hidden.
+            # An empty `off` is the "switch thinking off" level: selecting it
+            # sends thinking.type=disabled.
+            reasoningEfforts:
+              off:
+              low: low
+              high: high
+              max: max
+          - id: glm-5.3-flash
+            name: glm-5.3-flash
+            contextWindow: 1000000
+            input:
+              - text
+              - image
+            # `off` is deliberately NOT declared for this model: the gateway
+            # answers thinking.type=disabled with HTTP 400 for it. When `off` is
+            # undeclared, pi-ai sends no thinking parameter at all (HTTP 200),
+            # so the model simply has no Off row instead of a broken one.
+            reasoningEfforts:
+              low: low
+              high: high
+              max: max
