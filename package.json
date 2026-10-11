@@ -1,7 +1,7 @@
 {
   "name": "dsh-sub2api-provider",
   "version": "1.0.0",
-  "description": "Sub2API as a third-party provider for DeepSeek Harness, with Off/Low/High/Max thinking effort.",
+  "description": "把 Sub2API 作为 DeepSeek Harness 的第三方提供商，支持 Off/Low/High/Max 四档思考强度。",
   "type": "module",
   "license": "MIT",
   "private": true,
@@ -27,8 +27,8 @@
     "anthropic-messages"
   ],
   "meta": {
-    "title": "Sub2API Provider",
-    "description": "Adds the Sub2API gateway as a third-party provider with Off/Low/High/Max thinking effort."
+    "title": "Sub2API 提供商",
+    "description": "把 Sub2API 网关注册为第三方提供商，并支持 Off/Low/High/Max 思考强度。"
   },
   "dsh": {
     "bundle": {

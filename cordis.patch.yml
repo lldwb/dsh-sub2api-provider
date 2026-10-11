@@ -1,11 +1,11 @@
-# Sub2API third-party provider for the pi-ai LLM adapter.
+# 面向 pi-ai LLM 适配器的 Sub2API 第三方提供商。
 #
-# An id-targeted patch replaces the whole `config` of the shipped `llm-pi-ai`
-# row, so this row restates every provider it wants served: a patch that named
-# only `sub2api` would silently drop the others.
+# 按 id 定向的 patch 会整体替换随 dsh 提供的 `llm-pi-ai` 那一行的整个 `config`，
+# 因此这一行必须把它想提供的每个 provider 都重新写全：如果 patch 里只写
+# `sub2api`，其余 provider 会被静默丢掉。
 #
-# A higher-priority layer (the profile's own cordis.patch.yml, or a --patch
-# overlay) that also targets `llm-pi-ai` replaces this config wholesale.
+# 更高优先级的层（profile 自己的 cordis.patch.yml，或 --patch 覆盖层）如果也
+# 定向到 `llm-pi-ai`，会整体替换这份 config。
 - id: llm-pi-ai
   name: '@deepseek-ai/dsh-llm-pi-ai'
   config:
@@ -14,13 +14,12 @@
         displayName: Sub2API
         apiKeyEnv: SUB2API_API_KEY
         api: anthropic-messages
-        # Change this to your own Sub2API (or Anthropic Messages compatible) endpoint.
+        # 改成你自己的 Sub2API（或兼容 Anthropic Messages）端点。
         baseURL: http://150.241.207.58:8080
-        # This gateway accepts Anthropic adaptive thinking
-        # (thinking.type=adaptive + output_config.effort) but does NOT enforce
-        # thinking.budget_tokens, so the effort ladder is what actually carries
-        # the thinking intensity. Measured on the reference gateway: a
-        # budget_tokens of 128 still produced ~2500 tokens of thinking.
+        # 该网关接受 Anthropic 自适应思考
+        # （thinking.type=adaptive + output_config.effort），但并不强制
+        # thinking.budget_tokens，所以真正决定思考强度的是 effort 档位。
+        # 在参考网关上实测：budget_tokens 给 128 仍然产生了约 2500 token 的思考。
         compat:
           forceAdaptiveThinking: true
         models:
@@ -30,9 +29,8 @@
             input:
               - text
               - image
-            # Levels the picker publishes; undeclared levels are hidden.
-            # An empty `off` is the "switch thinking off" level: selecting it
-            # sends thinking.type=disabled.
+            # 选择器对外公布的档位；未声明的档位会被隐藏。
+            # `off` 留空即「关闭思考」档：选中它会发送 thinking.type=disabled。
             reasoningEfforts:
               off:
               low: low
@@ -44,10 +42,9 @@
             input:
               - text
               - image
-            # `off` is deliberately NOT declared for this model: the gateway
-            # answers thinking.type=disabled with HTTP 400 for it. When `off` is
-            # undeclared, pi-ai sends no thinking parameter at all (HTTP 200),
-            # so the model simply has no Off row instead of a broken one.
+            # 这个模型故意不声明 `off`：网关对它的 thinking.type=disabled 会返回
+            # HTTP 400。当 `off` 未声明时，pi-ai 完全不发送 thinking 参数
+            # （HTTP 200），所以该模型只是没有 Off 这一档，而不是有一档坏掉的。
             reasoningEfforts:
               low: low
               high: high
