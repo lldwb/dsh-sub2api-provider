@@ -1,5 +1,7 @@
 # dsh-sub2api-provider
 
+> GitHub：<https://github.com/lldwb/dsh-sub2api-provider>（公开）。
+
 把 **Sub2API** 注册为 [DeepSeek Harness (dsh)](https://github.com/deepseek-ai/deepseek-harness) 的第三方提供商，并支持 **Off / Low / High / Max 思考强度**。
 
 本仓库是一个 dsh **bundle**（配置型插件）：它通过 profile 的 Cordis patch 层，把 `sub2api` 这条路由写进 dsh 随附的 `@deepseek-ai/dsh-llm-pi-ai` 适配器。
