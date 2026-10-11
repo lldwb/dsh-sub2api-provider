@@ -1,4 +1,6 @@
 {
-  "title": "Sub2API 提供商",
-  "description": "把 Sub2API 网关注册为第三方提供商，并支持 Off/Low/High/Max 思考强度。"
+  "meta": {
+    "title": "Sub2API 提供商",
+    "description": "把 Sub2API 网关注册为第三方提供商，并支持 Off/Low/High/Max 思考强度。"
+  }
 }
