@@ -1,6 +1,6 @@
 {
   "name": "dsh-sub2api-provider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "把 Sub2API 作为 DeepSeek Harness 的第三方提供商，支持 Off/Low/High/Max 四档思考强度。",
   "type": "module",
   "license": "MIT",
