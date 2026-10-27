@@ -1,11 +1,11 @@
 {
   "name": "dsh-sub2api-provider",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "把 Sub2API 作为 DeepSeek Harness 的第三方提供商，支持 Off/Low/High/Max 四档思考强度。",
   "type": "module",
   "license": "MIT",
   "private": true,
-  "icon": "./icon.png",
+  "icon": "./icon.svg",
   "exports": {
     "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json"
@@ -13,7 +13,7 @@
   "files": [
     "cordis.patch.yml",
     "locale/*.json",
-    "icon.png",
+    "icon.svg",
     "README.md",
     "LICENSE"
   ],
