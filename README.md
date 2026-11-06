@@ -81,6 +81,32 @@ GET {baseURL}/v1/models?limit=1000     (x-api-key + anthropic-version)
 - 同理，本 bundle 会替换 `llm-pi-ai` 行的全部 provider。若你还要在这条适配器上跑别的提供商，请把它们一并写进同一份 `providers`。
 - 提供商目录不校验远端是否真的接受某个模型，实际调用仍可能失败。
 
+## 适配与验证记录（DSH 0.2.2-rc.1，2026-11-06）
+
+**无配置改动**。0.2.2-rc.1 给 `llm-pi-ai` 的每个 provider 新增了两个**可选**字段：
+
+| 字段 | 默认 | 作用 |
+|---|---|---|
+| `maxRequestImages` | `50` | 单次请求保留的图片数上限；超出的最老图片被换成占位文本（记录进会话，不回退） |
+| `imageOffloadCountQuantum` | `10`（不超过上面的上限） | 每次计数溢出时批量卸载多少张 |
+
+本 bundle **不写这两项**，因此走 0.2.2 的默认值 —— 这正是想要的行为：默认值由适配器维护，
+不在这里另抄一份常量（抄了就会在官方调默认值时变成陈旧配置）。二者只影响多图长会话的降级路径，
+文本/单图请求与之前完全一致。
+
+### 验证
+
+| 验证 | 结果 |
+|---|---|
+| 单测 | 无（纯配置 bundle，仓库不含测试） |
+| 合成核对（devkit headless `sub2api-provider-config`，`inheritModel: false` 以免真实 profile 的 `llm-pi-ai` 覆盖层盖住本 bundle） | `dsh --profile devkit-sub2api-provider-config --dump-config` 里本 bundle 提供的 `llm-pi-ai` 行**完整保留**：`providers.sub2api` 的 `displayName`/`apiKeyEnv`/`api: anthropic-messages`/`baseURL`/`compat.forceAdaptiveThinking`/两个模型的 `contextWindow`/`input`/`reasoningEfforts`（含 glm 故意不声明 `off` 的形状）逐项在树中，未被 0.2.2 的新 schema 拒绝或裁剪 |
+| 真实调用（devkit headless `sub2api-provider-regress`，模型 overlay 指向 sub2api 路由） | task「回复两个字：收到」→ **exit 0，返回「收到」**，即 0.2.2 下 sub2api 路由可正常派发 |
+| 本 bundle 自定义端点的实际调用（`sub2api-provider-config` + 只把 `agent-default-model` 指向 sub2api 的临时 patch） | 失败于 `dsh: TRANSPORT: Connection error.` —— 是**网络层**错误：仓库里默认的 `baseURL`（`150.241.207.58:8080`）当前返回 **HTTP 502**，而真实 profile 覆盖用的 `150.241.207.60:8080` 可达。属环境/网关状态，不是 0.2.2 兼容问题；配置本身已被接受（否则会报配置校验错，而不是传输错误） |
+
+> 默认值 `baseURL` 本来就是占位，请按「配置」一节改成你自己的端点。真实 desktop profile 里
+> `llm-pi-ai` 行由 profile 自己的 patch 覆盖（含可达的 `.60` 端点与 4 个模型）—— 这是本插件
+> 文档「已知限制」里写明的整块替换行为，符合预期。
+
 ## 许可
 
 MIT

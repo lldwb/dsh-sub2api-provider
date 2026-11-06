@@ -6,6 +6,10 @@
 #
 # 更高优先级的层（profile 自己的 cordis.patch.yml，或 --patch 覆盖层）如果也
 # 定向到 `llm-pi-ai`，会整体替换这份 config。
+#
+# DSH 0.2.2-rc.1 起每个 provider 另有可选 `maxRequestImages`（默认 50）与
+# `imageOffloadCountQuantum`（默认 10，且不超过前者）：超过图片上限时最老的一批被
+# 换成占位文本。这里**故意不写**，让适配器维护默认值；只在需要多图长会话时按需覆盖。
 - id: llm-pi-ai
   name: '@deepseek-ai/dsh-llm-pi-ai'
   config:
