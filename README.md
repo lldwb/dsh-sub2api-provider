@@ -107,6 +107,28 @@ GET {baseURL}/v1/models?limit=1000     (x-api-key + anthropic-version)
 > `llm-pi-ai` 行由 profile 自己的 patch 覆盖（含可达的 `.60` 端点与 4 个模型）—— 这是本插件
 > 文档「已知限制」里写明的整块替换行为，符合预期。
 
+## 适配与验证记录（DSH 0.2.2-rc.2，2026-11-12）
+
+**无配置改动**。rc.1 → rc.2 之间，`llm-pi-ai` 的 **provider 配置 schema 零改动**：
+
+- `packages/llm/llm-pi-ai/src/config.ts` 在 `dsh-v0.2.2-rc.1..dsh-v0.2.2-rc.2` 之间 **diff 为空**——
+  本 bundle 用到的 `displayName` / `apiKeyEnv` / `api` / `baseURL` / `compat.forceAdaptiveThinking` /
+  `models[].{id,name,contextWindow,input,reasoningEfforts}` 全部仍是合法字段。
+- 同包 `src/index.ts` 只新增 `onThinkingOmitted` 日志回调，`src/provider.ts` 新增
+  `google-generative-ai` 协议；两者都不影响 `api: anthropic-messages`。
+
+### 验证（devkit 沙箱，真实 Loader）
+
+| 验证 | 结果 |
+|---|---|
+| 干净 profile 合成（`inheritModel: false`，避免真实 profile 的 `llm-pi-ai` 覆盖层） | 合成树里 `- id: llm-pi-ai` 的 config **逐字段等于本 bundle 的 patch**（`providers.sub2api` 的 displayName/apiKeyEnv/api/baseURL/compat 与两个模型），即无更高层覆盖时本 bundle 是唯一事实来源 |
+| 干净 profile 默认路由（`deepseek-official/deepseek-flash`）跑一个 task | **exit 0**，`pwsh echo` 正常返回——装上本 bundle 后 rc.2 Loader 正常启动 |
+| 干净 profile + 临时 patch 把 `agent-default-model` 指向本 bundle 的 `sub2api/deepseek-flash` | 报 `dsh: TRANSPORT: Connection error.`——适配器**已注册**并真的发出了请求；仓库默认 `baseURL`（`150.241.207.58:8080`）在本机 TCP 不可达，属占位端点/网络环境问题 |
+| 负对照：`agent-default-model` 指向不存在的 provider（临时 patch） | 报 `dsh: NO_ADAPTER: no adapter registered for provider "no-such-provider"`——错误类型与上一条**不同**，反证 `sub2api` 路由确实注册成功 |
+| 真实 profile 覆盖层（继承真实 desktop 的 `llm-pi-ai`） | 有效 config 由 profile 层覆盖（`.60` 端点、4 个模型），符合「已知限制」的整块替换语义；该层下真实跑完一个 task（agent 运行在 `deepseek-flash` 上，**exit 0**） |
+
+单测：无（纯配置 bundle，仓库不含测试）。
+
 ## 许可
 
 MIT
